@@ -1,15 +1,28 @@
 package com.mjc.stage2.impl;
 
 
-public class ProxyConnection {
-    private RealConnection realConnection;
+import com.mjc.stage2.Connection;
 
-    public ProxyConnection(RealConnection realConnection) {
+public class ProxyConnection implements Connection {
+    private RealConnection realConnection;
+    private ConnectionPool connectionPool;
+
+    public ProxyConnection(RealConnection realConnection, ConnectionPool connectionPool) {
         this.realConnection = realConnection;
+        this.connectionPool = connectionPool;
     }
 
     public void reallyClose() {
-        // Write your code here!
+        realConnection.close();
     }
-    // Implement methods here!
+
+    @Override
+    public void close() {
+        connectionPool.releaseConnection(this);
+    }
+
+    @Override
+    public boolean isClosed() {
+        return realConnection.isClosed();
+    }
 }
